@@ -40,6 +40,28 @@ class LoginRepository
             [$sessionToken, $userId]
         );
     }
+
+    public function logLoginAttempt($attemptedUsername, $ipAddress, $userAgent, $success, $failure_reason)
+    {
+        $this->databasePdo->execute(
+            "INSERT INTO login_attempts (attempted_username,ip_address,user_agent,success,failure_reason) 
+            VALUES (?,?,?,?,?);",
+            [$attemptedUsername, $ipAddress, $userAgent, $success, $failure_reason]
+        );
+    }
+
+    public function getLoginAttemptsLastHourByUser($username)
+    {
+        $result = $this->databasePdo->select(
+            "SELECT timestamp FROM login_attempts 
+            WHERE attempted_username = ? 
+            AND success = 0
+            AND timestamp > NOW() - INTERVAL 1 HOUR;", 
+            [$username]
+        );
+
+        return $result;
+    }
 }
 
 ?>

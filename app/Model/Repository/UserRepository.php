@@ -61,11 +61,11 @@ class UserRepository
         );
     }
 
-    public function passwordChangesLastHour($userId, $changedAt)
+    public function passwordChangesLastDay($userId)
     {
         $result = $this->databasePdo->selectOne(
-            "SELECT COUNT(*) FROM password_changes WHERE user_id = ? AND changed_at >= ?;",
-            [$userId, $changedAt]
+            "SELECT COUNT(*) FROM password_changes WHERE user_id = ? AND changed_at >= NOW() - INTERVAL 24 HOUR;",
+            [$userId]
         );
 
         return $result;

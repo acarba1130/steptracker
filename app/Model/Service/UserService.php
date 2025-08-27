@@ -87,14 +87,12 @@ class UserService
                 $errors[] = "Password must include at least one special character.";
             }
 
-            //get password changes in the last hour
-            date_default_timezone_set('UTC');
-            $oneHourAgo = date('Y-m-d H:i:s', strtotime('-1 hour'));
-            $passwordChangesLastHourAssoc = $this->userRepository->passwordChangesLastHour($_SESSION['user']['user_id'], $oneHourAgo);
-            $passwordChangesLastHour = (int) $passwordChangesLastHourAssoc['COUNT(*)'];
+            //get password changes in the last day
+            $passwordChangesLastDayAssoc = $this->userRepository->passwordChangesLastDay($_SESSION['user']['user_id']);
+            $passwordChangesLastDay = (int) $passwordChangesLastDayAssoc['COUNT(*)'];
 
-            if ($passwordChangesLastHour >= 5) {
-                $errors[] = "You can only change your password 5 times per hour. Please try again later.";
+            if ($passwordChangesLastDay >= 1) {
+                $errors[] = "You can only change your password once per day. Please try again later.";
             }
         }
 

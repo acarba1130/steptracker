@@ -62,4 +62,12 @@ switch ($page) {
         break;
 }
 
+/**
+ * TODO
+ * take the password limiter out of the password valid check, need to put it before so user isnt able to see screen to update PW
+ * implement the cooldown periods with rolling window, remember to exclude attempts during cooldown from check
+ * add step logging and editing functionality
+ * make users
+ */
+
 ?>
