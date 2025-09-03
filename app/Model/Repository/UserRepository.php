@@ -88,6 +88,16 @@ class UserRepository
             [$newNickname, $userId]
         );
     }
+
+    public function getUserLoggedSteps($userId)
+    {
+        $result = $this->databasePdo->select(
+            "SELECT entry_date, steps_count FROM steps WHERE user_id = ?;", 
+            [$userId]
+        );
+
+        return $result;
+    }
 }
 
 ?>

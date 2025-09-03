@@ -62,36 +62,10 @@ class HomeController
 
     public function logSteps()
     {
-        // Dummy logged steps by date (YYYY-MM-DD)
-        $loggedSteps = [
-            '2025-08-20' => 10500,
-            '2025-08-22' => 8700,
-            '2025-08-24' => 12000,
-        ];
+        $loggedSteps = $this->userService->getUserLoggedSteps();
 
         // Dates to show for logging
-
         $datesToShow = [];
-
-        if ($_SESSION['user']['user_id'] === '1') {
-            $datesToShow = array_merge($datesToShow, [
-                '2025-08-17',
-                '2025-08-18',
-                '2025-08-19',
-                '2025-08-20',
-                '2025-08-21',
-                '2025-08-22',
-                '2025-08-23',
-                '2025-08-24',
-                '2025-08-25',
-                '2025-08-26',
-                '2025-08-27',
-                '2025-08-28',
-                '2025-08-29',
-                '2025-08-30',
-                '2025-08-31',
-            ]);
-        }
 
         $year = 2025;
         $month = 9;
@@ -118,7 +92,7 @@ class HomeController
         $this->render('account.php', [
             'teamName' => $userTeamName['teamname'] ?? "Green Striders",
             'username' => $user['username'] ?? "johndoe",
-            'nickname' => $user['nickname'] ?? "Johnny"
+            'nickname' => $user['nickname'] ?? "Not set"
         ]);
     }
 

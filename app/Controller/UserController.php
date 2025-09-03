@@ -46,6 +46,10 @@ class UserController
             exit;
         }
 
+        if ($this->userService->isInPasswordCooldown()) {
+            $_SESSION['isInPasswordCooldown'] = 1;
+        }
+
         $this->render('edit-password.php', []);
     }
 

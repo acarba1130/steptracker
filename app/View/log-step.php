@@ -1,9 +1,6 @@
 <?php
-    $errors = $_SESSION['error'] ?? [];
+    $error = $_SESSION['error'] ?? '';
     unset($_SESSION['error']);
-
-    $isInPasswordCooldown = $_SESSION['isInPasswordCooldown'] ?? 0;
-    unset($_SESSION['isInPasswordCooldown']);
 ?>
 
 <!DOCTYPE html>
@@ -11,7 +8,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit Password</title>
+  <title>Log Step</title>
   <link rel="stylesheet" href="/../assets/css/style.css" />
   <style>
     .header {
@@ -57,7 +54,7 @@
       font-weight: bold;
     }
 
-    input[type="password"] {
+    input[type="text"] {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -98,35 +95,24 @@
 
     <div class="form-box">
       <h3>
-        🔒 Change Password
+        Log Step for <?= htmlspecialchars(date('m/d/Y', strtotime($date))) ?>
       </h3>
 
-      <?php if (!empty($errors)): ?>
-        <div class="form-error"><?= implode('<br>', array_map('htmlspecialchars', $errors)) ?></div>
+      <?php if (!empty($error)): ?>
+        <div class="form-error"><?= htmlspecialchars($error) ?></div>
       <?php endif; ?>
 
-      <form action="index.php?page=edit-password" method="post">
-        <?php if (!$isInPasswordCooldown): ?>
-          <label for="current_password">Current Password</label>
-          <input type="password" name="current_password" id="current_password" required />
+      <form action="index.php?page=log-step-submit" method="post">
+        <label for="step">Step Count</label>
+        <input type="text" name="stepCount" id="step" required />
 
-          <label for="new_password">New Password</label>
-          <input type="password" name="new_password" id="new_password" required />
-
-          <label for="confirm_password">Confirm New Password</label>
-          <input type="password" name="confirm_password" id="confirm_password" required />
-
-          <button type="submit" class="btn">Update</button>
-        <?php else: ?>
-          <div class="form-error">You can only change your password once per day. Please try again later.</div>
-        <?php endif; ?>
+        <button type="submit" class="btn">Log</button>
 
         <div style="text-align: center; margin-top: 15px;">
-          <a href="index.php?page=account" class="btn" style="background-color: #6c757d; margin-top: 10px; display: inline-block; width: auto; padding: 12px 20px; text-align: center; text-decoration: none;">
+          <a href="index.php?page=log-steps" class="btn" style="background-color: #6c757d; margin-top: 10px; display: inline-block; width: auto; padding: 12px 20px; text-align: center; text-decoration: none;">
             Cancel
           </a>
         </div>
-
       </form>
     </div>
   </div>

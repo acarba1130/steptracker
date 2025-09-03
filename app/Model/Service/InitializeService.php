@@ -15,19 +15,22 @@ class InitializeService
             include_once __DIR__ . '/../../Controller/LoginController.php';
             include_once __DIR__ . '/../../Controller/HomeController.php';
             include_once __DIR__ . '/../../Controller/UserController.php';
+            include_once __DIR__ . '/../../Controller/LogStepsController.php';
             include_once __DIR__ . '/../Service/LoginService.php';
             include_once __DIR__ . '/../Service/HomeService.php';
             include_once __DIR__ . '/../Service/UserService.php';
+            include_once __DIR__ . '/../Service/LogStepsService.php';
             include_once __DIR__ . '/../Repository/LoginRepository.php';
             include_once __DIR__ . '/../Repository/HomeRepository.php';
             include_once __DIR__ . '/../Repository/UserRepository.php';
+            include_once __DIR__ . '/../Repository/LogStepsRepository.php';
         }
     }
 
     public function checkIfUserInactive()
     {
         //Log out due to inactivity
-        $timeout_duration = 600;
+        $timeout_duration = 900;
 
         if (isset($_SESSION['user']['user_id'])) {
             if (isset($_SESSION['user']['last_activity']) && (time() - $_SESSION['user']['last_activity']) > $timeout_duration) {
@@ -41,7 +44,7 @@ class InitializeService
         
             $_SESSION['user']['last_activity'] = time();
         } else {
-            $privilegedPages = ['home', 'account', 'edit-password', 'edit-nickname', 'log-steps','log-step','edit-step'];
+            $privilegedPages = ['home', 'account', 'edit-password', 'edit-nickname', 'log-steps', 'log-step', 'log-step-submit'];
             if (in_array(($_GET['page'] ?? 'home'), $privilegedPages)) {
                 header('Location: index.php?page=login');
                 exit;

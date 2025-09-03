@@ -9,6 +9,7 @@ use StepTracker\Service\InitializeService;
 use StepTracker\Controller\LoginController;
 use StepTracker\Controller\HomeController;
 use StepTracker\Controller\UserController;
+use StepTracker\Controller\LogStepsController;
 
 
 $initialize = new InitializeService();
@@ -21,6 +22,7 @@ $page = $_GET['page'] ?? 'home';
 $loginController = new LoginController();
 $homeController = new HomeController();
 $userController = new UserController();
+$logStepsController = new LogStepsController();
 
 
 switch ($page) {
@@ -30,6 +32,14 @@ switch ($page) {
 
     case 'log-steps':
         $homeController->logSteps();
+        break;
+
+    case 'log-step':
+        $logStepsController->logStep();
+        break;
+
+    case 'log-step-submit':
+        $logStepsController->logStepSubmit();
         break;
 
     case 'account':
@@ -64,7 +74,6 @@ switch ($page) {
 
 /**
  * TODO
- * take the password limiter out of the password valid check, need to put it before so user isnt able to see screen to update PW
  * implement the cooldown periods with rolling window, remember to exclude attempts during cooldown from check
  * add step logging and editing functionality
  * make users

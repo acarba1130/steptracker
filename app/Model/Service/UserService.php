@@ -87,11 +87,7 @@ class UserService
                 $errors[] = "Password must include at least one special character.";
             }
 
-            //get password changes in the last day
-            $passwordChangesLastDayAssoc = $this->userRepository->passwordChangesLastDay($_SESSION['user']['user_id']);
-            $passwordChangesLastDay = (int) $passwordChangesLastDayAssoc['COUNT(*)'];
-
-            if ($passwordChangesLastDay >= 1) {
+            if ($this->isInPasswordCooldown()) {
                 $errors[] = "You can only change your password once per day. Please try again later.";
             }
         }
@@ -112,6 +108,14 @@ class UserService
 
         //track password changes
         $this->userRepository->logPasswordChange($_SESSION['user']['user_id']);
+    }
+
+    public function isInPasswordCooldown()
+    {
+        $passwordChangesLastDayAssoc = $this->userRepository->passwordChangesLastDay($_SESSION['user']['user_id']);
+        $passwordChangesLastDay = (int) $passwordChangesLastDayAssoc['COUNT(*)'];
+
+        return ($passwordChangesLastDay >= 1);
     }
 
     public function isNicknameUpdateValid($newNickname)
@@ -147,6 +151,21 @@ class UserService
     public function updateNickname($newNickname)
     {
         $this->userRepository->updateNickname($newNickname, $_SESSION['user']['user_id']);
+    }
+
+    public function getUserLoggedSteps()
+    {
+        $loggedStepsAssoc = $this->userRepository->getUserLoggedSteps($_SESSION['user']['user_id']);
+
+        $loggedSteps = [];
+
+        foreach ($loggedStepsAssoc as $row) {
+            if ((int)$row['steps_count'] > 0) {
+                $loggedSteps[$row['entry_date']] = $row['steps_count'];
+            }
+        }
+
+        return $loggedSteps;
     }
 }
 

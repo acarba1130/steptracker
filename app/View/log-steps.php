@@ -1,3 +1,8 @@
+<?php
+    $error = $_SESSION['error'] ?? '';
+    unset($_SESSION['error']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,8 +114,8 @@
 
     <h3 style="margin-bottom:10px;">Log Your Steps</h3>
 
-    <?php if (!empty($errorMessage)): ?>
-      <div class="error"><?= htmlspecialchars($errorMessage) ?></div>
+    <?php if (!empty($error)): ?>
+      <div class="form-error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <?php foreach ($datesToShow as $date):
@@ -130,7 +135,7 @@
         </div>
 
         <?php if ($logged): ?>
-          <form action="index.php?page=edit-step" method="post" class="inline">
+          <form action="index.php?page=log-step" method="post" class="inline">
             <input type="hidden" name="date" value="<?= htmlspecialchars($date) ?>" />
             <button type="submit" class="btn">Edit</button>
           </form>
