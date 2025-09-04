@@ -14,6 +14,7 @@ use StepTracker\Controller\LogStepsController;
 
 $initialize = new InitializeService();
 $initialize->loadFiles();
+$initialize->checkIfIpIsBlocked();
 $initialize->checkIfUserInactive();
 $initialize->checkIfMostRecentSession();
 

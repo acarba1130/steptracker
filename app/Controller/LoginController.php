@@ -50,6 +50,7 @@ class LoginController
             header('Location: index.php?page=home');
             exit;
         } else {
+            $this->loginService->checkFailedLogInAttempts();
             $_SESSION['error'] = 'Invalid credentials';
             header('Location: index.php?page=login');
             exit;

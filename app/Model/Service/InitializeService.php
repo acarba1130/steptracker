@@ -72,4 +72,23 @@ class InitializeService
             }
         }
     }
+
+    public function checkIfIpIsBlocked()
+    {
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+        $db = new DatabasePdo();
+
+        $result = (int)$db->selectOne(
+            "SELECT COUNT(*) FROM blocked_ips 
+            WHERE ip_address = ?;", 
+            [$ipAddress]
+        )['COUNT(*)'];
+
+        if ($result > 0) {
+            http_response_code(404);
+            echo "Page not found.";
+            exit;
+        }
+    }
 }

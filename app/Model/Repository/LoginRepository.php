@@ -13,7 +13,7 @@ class LoginRepository
         $this->databasePdo = new DatabasePdo();
     }
 
-    public function searchUsernamePassword($username, $hashed_password)
+    public function searchUsernamePassword($username)
     {
         $result = $this->databasePdo->selectOne(
             "SELECT user_id, username, hashed_password FROM users WHERE username = ?;", 
@@ -50,17 +50,26 @@ class LoginRepository
         );
     }
 
-    public function getLoginAttemptsLastHourByUser($username)
+    public function getFailedLoginAttemptsLastHourByIp($ipAddress)
     {
-        $result = $this->databasePdo->select(
-            "SELECT timestamp FROM login_attempts 
-            WHERE attempted_username = ? 
+        $result = $this->databasePdo->selectOne(
+            "SELECT COUNT(*) FROM login_attempts 
+            WHERE ip_address = ? 
             AND success = 0
             AND timestamp > NOW() - INTERVAL 1 HOUR;", 
-            [$username]
+            [$ipAddress]
         );
 
         return $result;
+    }
+
+    public function addBlockedIp($ipAddress)
+    {
+        $this->databasePdo->execute(
+            "INSERT INTO blocked_ips (ip_address) 
+            VALUES (?);",
+            [$ipAddress]
+        );
     }
 }
 

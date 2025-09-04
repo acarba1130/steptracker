@@ -20,12 +20,13 @@ class LoginService
 
     public function authenticateLogin()
     {
+
         if (trim($this->username) === '' || trim($this->password) === '') {
             $this->logLoginAttempt(false, 'Empty username or password');
             return;
         }
 
-        $result = $this->loginRepository->searchUsernamePassword($this->username, $this->password);
+        $result = $this->loginRepository->searchUsernamePassword($this->username);
 
         if ($result === null) {
             $this->logLoginAttempt(false, 'User not found');
@@ -42,54 +43,26 @@ class LoginService
         }
     }
 
-    public function isIpInCooldown()
+    public function checkFailedLogInAttempts()
     {
-
+        if ($this->failedLoginAttemptsMoreThanTenByIp()) {
+            $this->addBlockedIp();
+        }
     }
 
-    public function isUserInCooldown()
+    public function failedLoginAttemptsMoreThanTenByIp()
     {
-        $timestampAssoc = $this->loginRepository->getLoginAttemptsLastHourByUser($this->username);
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
-        $now = time();
-        $cooldown = 0;
-        $attemptsIn15 = 0;
-        $attemptsIn30 = 0;
-        $attemptsIn60 = 0;
+        $loginAttemptsLastHour = (int)$this->loginRepository->getFailedLoginAttemptsLastHourByIp($ipAddress)['COUNT(*)'];
 
-        foreach ($timestampAssoc as $index=>$tsArray) {
-            $delta = $now - strtotime($tsArray['timestamp']);
-            if ($delta <= 15 * 60) $attemptsIn15++;
-            if ($delta <= 30 * 60) $attemptsIn30++;
-            if ($delta <= 60 * 60) $attemptsIn60++;
-        }
+        return ($loginAttemptsLastHour > 10);
+    }
 
-        // Apply cascading cooldowns in order of severity
-        if ($attemptsIn60 > 9) {
-            $cooldown = 60;
-        } elseif ($attemptsIn30 >= 8) {
-            $cooldown = 15;
-        } elseif ($attemptsIn15 >= 5) {
-            $cooldown = 5;
-        }
-
-        return [($cooldown !== 0), $cooldown];
-
-        /*
-        $cooldownMinutes = getUserCooldownMinutes($timestamps);
-$cooldownUntil = $lastFailTime + ($cooldownMinutes * 60);
-
-if (time() < $cooldownUntil) {
-    $wait = ceil(($cooldownUntil - time()) / 60);
-    echo "Too many failed attempts. Try again in $wait minute(s).";
-    exit;
-}
-
-
-        for attempts during cooldown, to not mess up the rolling window
-        WHERE failure_reason IS NULL OR failure_reason != 'Attempt during cooldown'
-
-         */
+    public function addBlockedIp()
+    {
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $this->loginRepository->addBlockedIp($ipAddress);
     }
 
     public function logLoginAttempt($success, $failureReason = null)
